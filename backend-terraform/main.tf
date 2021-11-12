@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 data "terraform_remote_state" "network" {
-  backend = "local"
+  backend = "remote"
 
   config = {
     organization = "hashicorp-training"
