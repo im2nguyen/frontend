@@ -29,6 +29,7 @@ jobs:
         with:
           terraform_version: 1.1.0-beta1
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
 
       # Update terraform.tf to default to single workspace
       - name: Terraform Init, create TFC workspace
@@ -42,9 +43,6 @@ jobs:
       - name: Build preview environment
         if: github.event_name == 'pull_request'
         id: build-preview-environment
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
         run: |
           cd backend-terraform
           terraform apply --auto-approve
