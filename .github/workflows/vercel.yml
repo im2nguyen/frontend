@@ -39,6 +39,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Install and Build Prod Environment
+        if: github.event_name == 'push'
         run: |
           npm install
           npm run build
