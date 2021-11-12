@@ -22,11 +22,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Only set up preview environment for pull requests
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        if: github.event_name == 'pull_request'
+        with:
+          terraform_version: 1.1.0-beta1
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      # Update terraform.tf to default to single workspace
+      - name: Terraform Init, create TFC workspace
+        if: github.event_name == 'pull_request'
+        id: init-workspace
+        run: |
+          cd backend-terraform
+          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-'${{ github.head_ref }}'"/g' terraform.tf
+          terraform init -input=false
+
+      - name: Build preview environment
+        if: github.event_name == 'pull_request'
+        id: build-preview-environment
+        run: |
+          cd backend-terraform
+          terraform apply --auto-approve
+          terraform output -raw lb_dns_name > lb_dns_name.txt
+
       - name: Install and Build Preview Environment
         if: github.event_name == 'pull_request'
         run: |
-          npm install
-          REACT_APP_PUBLIC_API_URL=http://localhost:8081 npm run build
+          npm install 
+          REACT_APP_PUBLIC_API_URL="https://$(cat backend-terraform/lb_dns_name.txt)" npm run build
 
       - name: Deploy Preview Environment
         uses: amondnet/vercel-action@v20.0.0
@@ -37,6 +63,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: build
 
       - name: Install and Build Prod Environment
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -53,4 +80,5 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: build
           vercel-args: "--prod "
