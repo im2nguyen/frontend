@@ -30,18 +30,14 @@ jobs:
           terraform_version: 1.1.0-beta1
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Terraform Init
+      # Update terraform.tf to default to single workspace
+      - name: Terraform Init, create TFC workspace
         if: github.event_name == 'pull_request'
-        id: init
+        id: init-workspace
         run: |
           cd backend-terraform
-          terraform init -input=false -backend=false
-
-      - name: Select and create TFC workspace
-        if: github.event_name == 'pull_request'
-        id: select-workspace
-        run: |
-          terraform workspace new "hcup-be-${GITHUB_REF##*/}"
+          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-'${GITHUB_REF##*/}'"/g' terraform.tf
+          terraform init -input=false
 
       - name: Build preview environment
         if: github.event_name == 'pull_request'
