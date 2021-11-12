@@ -31,7 +31,7 @@ jobs:
       - name: Deploy Preview Environment
         uses: amondnet/vercel-action@v20.0.0
         id: vercel-action-preview
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -39,7 +39,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Install and Build Prod Environment
-        if: github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           npm install
           npm run build
@@ -47,7 +47,7 @@ jobs:
       - name: Deploy Prod Environment
         uses: amondnet/vercel-action@v20.0.0
         id: vercel-action-production
-        if: github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
