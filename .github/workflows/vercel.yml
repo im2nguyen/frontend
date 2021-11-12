@@ -50,8 +50,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           npm install
+          terraform output -raw lb_dns_name
           REACT_APP_PUBLIC_API_URL="http://$(terraform output -raw lb_dns_name)" npm run build
-          ls build
 
       - name: Deploy Preview Environment
         uses: amondnet/vercel-action@v20.0.0
