@@ -10,6 +10,8 @@ resource "aws_lb_listener" "app" {
   load_balancer_arn = aws_lb.app.arn
   port              = "443"
   protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.terraform_remote_state.network.outputs.ssl_cert_arn
 
   default_action {
     type             = "forward"
