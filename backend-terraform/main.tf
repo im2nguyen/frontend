@@ -6,7 +6,10 @@ data "terraform_remote_state" "network" {
   backend = "local"
 
   config = {
-    path = "../terraform.tfstate"
+    organization = "hashicorp-training"
+    workspaces = {
+      name = "hcup-be-network"
+    }
   }
 }
 
