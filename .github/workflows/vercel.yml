@@ -42,10 +42,14 @@ jobs:
       - name: Build preview environment
         if: github.event_name == 'pull_request'
         id: build-preview-environment
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
         run: |
           cd backend-terraform
           terraform apply --auto-approve
           terraform output -raw lb_dns_name > lb_dns_name.txt
+          cat backend-terraform/lb_dns_name.txt
 
       - name: Install and Build Preview Environment
         if: github.event_name == 'pull_request'
