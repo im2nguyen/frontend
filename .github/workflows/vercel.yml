@@ -22,11 +22,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Only set up preview environment for pull requests
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        if: github.event_name == 'pull_request'
+        with:
+          terraform_version: 1.1.0-beta1
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform init, select workspace, and build preview environment
+        if: github.event_name == 'pull_request'
+        id: init-workspace
+        run: |
+          cd backend-terraform
+          terraform init
+          terraform workspace new "hcup-be-${GITHUB_REF##*/}"
+          terraform apply --auto-approve
+
       - name: Install and Build Preview Environment
         if: github.event_name == 'pull_request'
         run: |
+          cd ..
           npm install
-          REACT_APP_PUBLIC_API_URL=http://localhost:8081 npm run build
+          REACT_APP_PUBLIC_API_URL=http://${terraform output -raw lb_dns_name} npm run build
 
       - name: Deploy Preview Environment
         uses: amondnet/vercel-action@v20.0.0
