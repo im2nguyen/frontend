@@ -34,6 +34,7 @@ jobs:
         if: github.event_name == 'pull_request'
         id: init-workspace
         run: |
+          ls
           cd backend-terraform
           terraform init
           terraform workspace new "hcup-be-${GITHUB_REF##*/}"
