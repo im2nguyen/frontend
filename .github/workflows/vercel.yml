@@ -37,7 +37,7 @@ jobs:
         run: |
           cd backend-terraform
           echo ${{ github.head_ref }}
-          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-{github.head_ref}"/g' terraform.tf
+          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-'{ github.head_ref }'"/g' terraform.tf
           terraform init -input=false
 
       - name: Build preview environment
