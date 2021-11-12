@@ -23,7 +23,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install and Build Preview Environment
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         run: |
           npm install
           REACT_APP_PUBLIC_API_URL=http://localhost:8081 npm run build
