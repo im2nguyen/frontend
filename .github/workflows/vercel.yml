@@ -30,13 +30,23 @@ jobs:
           terraform_version: 1.1.0-beta1
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Terraform init, select workspace, and build preview environment
+      - name: Terraform Init
         if: github.event_name == 'pull_request'
-        id: init-workspace
+        id: init
         run: |
           cd backend-terraform
-          terraform init
+          terraform init -input=false -backend=false
+
+      - name: Select and create TFC workspace
+        if: github.event_name == 'pull_request'
+        id: select-workspace
+        run: |
           terraform workspace new "hcup-be-${GITHUB_REF##*/}"
+
+      - name: Build preview environment
+        if: github.event_name == 'pull_request'
+        id: build-preview-environment
+        run: |
           terraform apply --auto-approve
 
       - name: Install and Build Preview Environment
