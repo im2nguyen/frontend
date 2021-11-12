@@ -36,19 +36,19 @@ jobs:
         id: init-workspace
         run: |
           cd backend-terraform
-          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-'${GITHUB_REF#refs/heads/}'"/g' terraform.tf
+          sed -i 's/tags = \["hashicupsBackend"\]/name = "hcup-be-'${GITHUB_REF}'"/g' terraform.tf
           terraform init -input=false
 
       - name: Build preview environment
         if: github.event_name == 'pull_request'
         id: build-preview-environment
         run: |
+          cd backend-terraform
           terraform apply --auto-approve
 
       - name: Install and Build Preview Environment
         if: github.event_name == 'pull_request'
         run: |
-          cd ..
           npm install
           REACT_APP_PUBLIC_API_URL=http://${terraform output -raw lb_dns_name} npm run build
 
