@@ -35,8 +35,6 @@ const Coffees = styled(Slider)`
 const App = () => {
     const { loading, error, data } = useQuery(QUERY_coffees)
 
-    console.log(error)
-
     if (error) return <p>Error :(</p>
 
     return (
