@@ -153,7 +153,7 @@ export const Header = ({ loading }) => {
                         <path d="M28 4.6v20.8l-8 4.4V36l13-7.5v-21zM13.1 0L0 7.5v21l5.1 2.9V10.6l8-4.4z" />
                     </g>
                 </svg>
-            </Logo>
+            </Logo>HashiCups
             <Overlay />
         </Container>
     )
