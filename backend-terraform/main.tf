@@ -30,7 +30,7 @@ data "aws_ami" "ubuntu" {
 }
 
 data "template_file" "user_data" {
-  template = file("add-ssh-web-app.yaml")
+  template = file("setup-hashicups.yaml")
 }
 
 resource "aws_instance" "hashicups-backend" {
